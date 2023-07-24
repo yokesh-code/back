@@ -6,8 +6,6 @@ const {
   hashPassowrd,
   hashCompare,
   createToken,
-  jwtDecode,
-  validate,
   authenticate
 } = require("../auth");
 mongoose.connect(dbUrl);
@@ -51,7 +49,6 @@ router.post("/signin", async (req, res) => {
       let hash = await hashCompare(req.body.password, user[0].password);
 
       if (hash) {
-        // let token = await createToken(user[0].email, user[0].role);
         let token = await createToken(user[0].email, user[0].role, user[0].batch);
 
         res.send({ statusCode: 200, message: "Sign-in successfull!!!", token });
@@ -69,19 +66,15 @@ router.post("/signin", async (req, res) => {
 
 
 router.post('/reset-password', async(req,res)=>{
-  //verify the email exist and create a JWT and send the pwd reset link to that persons email
+  //verify the email exist
   await client.connect();
   try{
     const db = client.db(dbName);
     let user = await db.collection("users").findOne({email:req.body.email});
-    // console.log(user)
 
     if(user){
-      // console.log(user)
         let token = await createToken({email:user.email, role :user.role});
-        // console.log(token)
       let userUpdate=await db.collection("users").updateOne({email:user.email},{$set:{token:token}});
-      // console.log(userUpdate)
       res.json({
         message:"sent"
       })
@@ -142,14 +135,11 @@ router.get('/update-password/:token', async(req,res,next)=>{
 
 router.post('/update-password/:token', async(req,res,next)=>{
   const {token} =req.params;
-  // console.log("Toks",token)
   const{password, password2} =req.body
-  // console.log(password2,password)
 
-// get the new password and change the password in the db. The email should be decoded from the jwt sent from front end
+// get the new password
   await client.connect();
-  const mail = await authenticate(token);//authenticating the token and decoding the email address
-  // console.log(mail)
+  const mail = await authenticate(token);
 const email =mail.email
 console.log(email)
   if(email || password === password2){
@@ -189,7 +179,6 @@ console.log(email)
     try{
       const db = client.db(dbName);
       let user = await db.collection("users").findOne({email:email});
-      // console.log(user)
       let roleVerify =user.role
       console.log(roleVerify)
       res.send({
@@ -281,7 +270,6 @@ res.send({ statusCode: 401, message: "Internal Server Error", error });
 router.put('/updateStu/:id',async(req,res)=>{
   try {
     let user = await usersModel.findOne({_id:mongodb.ObjectId(req.params.id)})
-    // console.log(user)
     if(user)
     {   
        user.firstName =req.body.firstName
@@ -302,11 +290,10 @@ router.put('/updateStu/:id',async(req,res)=>{
   }
 })
 
- //Update Teacher by Cordi
+ //Update Teacher
  router.get('/getUpTeachData/:id',async(req,res)=>{
   try {
     let user = await usersModel.findOne({_id:mongodb.ObjectId(req.params.id)})
-    // console.log(user)
     if(user)
     {
       
@@ -323,7 +310,6 @@ router.put('/updateStu/:id',async(req,res)=>{
 router.put('/updateTeach/:id',async(req,res)=>{
   try {
     let user = await usersModel.findOne({_id:mongodb.ObjectId(req.params.id)})
-    // console.log(user)
     if(user)
     {   
        user.firstName =req.body.firstName
@@ -344,11 +330,10 @@ router.put('/updateTeach/:id',async(req,res)=>{
   }
 })
 
- //Update Cordi by Cordi
+ //Update
  router.get('/getUpCordiData/:id',async(req,res)=>{
   try {
     let user = await usersModel.findOne({_id:mongodb.ObjectId(req.params.id)})
-    // console.log(user)
     if(user)
     {
       
