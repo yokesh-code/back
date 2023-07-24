@@ -102,7 +102,7 @@ router.post('/reset-password', async(req,res)=>{
        <h2>Hello ${user.email}</h2>
        <p>We've recieved a request to reset the password for your account associated with your email.
        You can reset your password by clicking the link below</p>
-       <a href=https://localhost:3000/users/update-password/${token}> Reset Password</a>
+       <a href=https://ticketsystem-wisf.onrender.com/${token}> Reset Password</a>
        <p><b>Note:</b>The link expires 15 minutes from now</p>
       </div>`,
       };
